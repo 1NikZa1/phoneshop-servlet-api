@@ -15,8 +15,7 @@ public class ProductListPageServlet extends HttpServlet {
     private ProductDao productDao;
 
     @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
+    public void init(ServletConfig config) {
         productDao = new ArrayListProductDao();
     }
 

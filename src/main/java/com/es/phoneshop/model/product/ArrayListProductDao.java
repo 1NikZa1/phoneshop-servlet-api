@@ -8,11 +8,10 @@ import java.util.stream.Collectors;
 
 public class ArrayListProductDao implements ProductDao {
 
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
     private long maxId;
 
     public ArrayListProductDao() {
-        this.products = new ArrayList<>();
         saveSampleProducts();
     }
 
@@ -33,25 +32,27 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public synchronized void save(Product product) {
-        if (product.getId() != null) {
-            products = products.stream()
-                    .peek(p -> {
-                        if (product.getId().equals(p.getId())) {
-                            p.setCode(product.getCode());
-                            p.setDescription(product.getDescription());
-                            p.setPrice(product.getPrice());
-                            p.setCurrency(product.getCurrency());
-                            p.setStock(product.getStock());
-                            p.setImageUrl(product.getImageUrl());
-                        }
-                    })
-                    .collect(Collectors.toList());
-        } else {
+    public synchronized boolean save(Product product) {
+        if (product.getId() == null) {
             product.setId(maxId++);
             products.add(product);
+            return true;
+        } else {
+            Product pWithProductId = getProduct(product.getId());
+            if (pWithProductId == null) {
+                product.setId(maxId++);
+                products.add(product);
+                return true;
+            } else {
+                pWithProductId.setCode(product.getCode());
+                pWithProductId.setCurrency(product.getCurrency());
+                pWithProductId.setDescription(product.getDescription());
+                pWithProductId.setImageUrl(product.getImageUrl());
+                pWithProductId.setPrice(product.getPrice());
+                pWithProductId.setStock(product.getStock());
+                return false;
+            }
         }
-
     }
 
     @Override
