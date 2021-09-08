@@ -1,9 +1,9 @@
 package com.es.phoneshop.model.product;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -25,11 +25,33 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public synchronized List<Product> findProducts() {
-        return products.stream()
-                .filter(product -> product.getPrice() != null)
-                .filter(product -> product.getStock() > 0)
-                .collect(Collectors.toList());
+    public List<Product> findProducts(String query, String sortField, String sortOrder) {
+        List<Product> returnProducts = findProducts(query);
+        if (sortField == null || sortField.isEmpty()) {
+            return findProducts(query);
+        }
+
+        String orderType;
+        if (sortOrder == null || sortOrder.isEmpty()) {
+            orderType = "asc";
+        } else {
+            orderType = sortOrder;
+        }
+
+        Comparator<Product> comparator;
+
+        if (sortField.equals("description")) {
+            comparator = Comparator.comparing(product -> product.getDescription().toLowerCase());
+        } else {
+            comparator = Comparator.comparing(Product::getPrice);
+        }
+
+        if (orderType.equals("desc")) {
+            comparator = comparator.reversed();
+        }
+
+        returnProducts.sort(comparator);
+        return returnProducts;
     }
 
     @Override
@@ -74,5 +96,34 @@ public class ArrayListProductDao implements ProductDao {
         save(new Product("simc56", "Siemens C56", new BigDecimal(70), usd, 20, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C56.jpg"));
         save(new Product("simc61", "Siemens C61", new BigDecimal(80), usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C61.jpg"));
         save(new Product("simsxg75", "Siemens SXG75", new BigDecimal(150), usd, 40, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20SXG75.jpg"));
+    }
+
+    private synchronized List<Product> findProducts() {
+        return products.stream()
+                .filter(product -> product.getPrice() != null)
+                .filter(product -> product.getStock() > 0)
+                .collect(Collectors.toList());
+    }
+
+    private List<Product> findProducts(String query) {
+        if (query == null || query.isEmpty()) {
+            return findProducts();
+        }
+
+        String[] words = query.toLowerCase().split(" ");
+
+        Predicate<Product> hasMatch = product -> Arrays.stream(words)
+                .anyMatch(word -> product.getDescription().toLowerCase().contains(word));
+
+        ToIntFunction<Product> matchCount = product -> (int) Arrays.stream(words)
+                .filter(word -> product.getDescription().toLowerCase().contains(word))
+                .count();
+
+        return findProducts().stream()
+                .filter(product -> product.getPrice() != null)
+                .filter(product -> product.getStock() > 0)
+                .filter(hasMatch)
+                .sorted(Comparator.comparingInt(matchCount).reversed())
+                .collect(Collectors.toList());
     }
 }
