@@ -32,7 +32,7 @@
       <tr>
         <td>
           <img class="product-tile"
-               src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${product.imageUrl}"
+               src="${product.imageUrl}"
                alt="error">
         </td>
         <td>${product.description}</td>
