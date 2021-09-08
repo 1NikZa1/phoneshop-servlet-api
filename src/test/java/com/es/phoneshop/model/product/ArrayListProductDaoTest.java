@@ -49,11 +49,11 @@ public class ArrayListProductDaoTest {
         assertEquals(12, productDao.findProducts().size());
     }
 
-    @Test
+    @Test(expected = RuntimeException.class)
     public void testDeleteProduct() {
         int sizeBefore = productDao.findProducts().size();
         productDao.delete(0L);
-        assertNull(productDao.getProduct(0L));
+        productDao.getProduct(0L);
         assertEquals(sizeBefore, productDao.findProducts().size() + 1);
 
     }

@@ -16,11 +16,11 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public synchronized Product getProduct(Long id) {
+    public synchronized Product getProduct(Long id) throws RuntimeException {
         return products.stream()
                 .filter(product -> id.equals(product.getId()))
                 .findAny()
-                .orElse(null);
+                .orElseThrow(() -> new RuntimeException("Item not found"));
     }
 
     @Override
@@ -32,27 +32,13 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public synchronized boolean save(Product product) {
-        if (product.getId() == null) {
-            product.setId(maxId++);
+    public synchronized void save(Product product) {
+        if (product.getId() != null && products.removeIf(p -> product.getId().equals(p.getId()))) {
             products.add(product);
-            return true;
-        } else {
-            Product pWithProductId = getProduct(product.getId());
-            if (pWithProductId == null) {
-                product.setId(maxId++);
-                products.add(product);
-                return true;
-            } else {
-                pWithProductId.setCode(product.getCode());
-                pWithProductId.setCurrency(product.getCurrency());
-                pWithProductId.setDescription(product.getDescription());
-                pWithProductId.setImageUrl(product.getImageUrl());
-                pWithProductId.setPrice(product.getPrice());
-                pWithProductId.setStock(product.getStock());
-                return false;
-            }
+            return;
         }
+        product.setId(maxId++);
+        products.add(product);
     }
 
     @Override
@@ -77,6 +63,5 @@ public class ArrayListProductDao implements ProductDao {
         save(new Product("simc56", "Siemens C56", new BigDecimal(70), usd, 20, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C56.jpg"));
         save(new Product("simc61", "Siemens C61", new BigDecimal(80), usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C61.jpg"));
         save(new Product("simsxg75", "Siemens SXG75", new BigDecimal(150), usd, 40, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20SXG75.jpg"));
-
     }
 }
