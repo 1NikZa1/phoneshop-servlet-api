@@ -25,11 +25,11 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public synchronized Product getProduct(Long id) throws RuntimeException {
+    public synchronized Product getProduct(Long id) {
         return products.stream()
                 .filter(product -> id.equals(product.getId()))
                 .findAny()
-                .orElseThrow(() -> new RuntimeException("Item not found"));
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
     @Override
