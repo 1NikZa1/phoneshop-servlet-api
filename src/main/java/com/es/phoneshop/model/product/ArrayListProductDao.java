@@ -26,6 +26,11 @@ public class ArrayListProductDao implements ProductDao {
 
     @Override
     public synchronized Product getProduct(Long id) {
+
+        if (id == null) {
+            throw new IllegalArgumentException();
+        }
+
         return products.stream()
                 .filter(product -> id.equals(product.getId()))
                 .findAny()
@@ -33,10 +38,10 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public List<Product> findProducts(String query, String sortField, String sortOrder) {
+    public synchronized List<Product> findProducts(String query, String sortField, String sortOrder) {
         List<Product> returnProducts = findProducts(query);
         if (sortField == null || sortField.isEmpty()) {
-            return findProducts(query);
+            return returnProducts;
         }
 
         String orderType;
@@ -84,9 +89,10 @@ public class ArrayListProductDao implements ProductDao {
 
     @Override
     public synchronized void delete(Long id) {
-        products = products.stream()
-                .filter(product -> !(id.equals(product.getId())))
-                .collect(Collectors.toList());
+        if (id == null) {
+            throw new IllegalArgumentException();
+        }
+        products.removeIf(product -> product.getId().equals(id));
     }
 
     private synchronized List<Product> findProducts() {
