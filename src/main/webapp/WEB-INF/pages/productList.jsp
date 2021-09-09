@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <jsp:useBean id="products" type="java.util.ArrayList" scope="request"/>
 <tags:master pageTitle="Product List">
@@ -39,8 +40,11 @@
                     <a href="${pageContext.servletContext.contextPath}/products/${product.id}">${product.description}</a>
                 </td>
                 <td class="price">
-                    <fmt:formatNumber value="${product.price}" type="currency"
-                                      currencySymbol="${product.currency.symbol}"/>
+                    <c:if test="${fn:length(product.priceHistory) > 0}">
+                    <a href="${pageContext.servletContext.contextPath}/price-history/${product.id}">
+                        </c:if>
+                            <fmt:formatNumber value="${product.price}" type="currency"
+                                              currencySymbol="${product.currency.symbol}"/>
                 </td>
             </tr>
         </c:forEach>

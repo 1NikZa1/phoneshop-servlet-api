@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class ProductDetailsPageServlet extends HttpServlet {
+public class ProductPriceHistoryPageServlet extends HttpServlet {
+
     private ProductDao productDao;
 
     @Override
@@ -22,6 +23,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String productId = request.getPathInfo();
         request.setAttribute("product", productDao.getProduct(Long.parseLong(productId.substring(1))));
-        request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/pages/productPriceHistory.jsp").forward(request, response);
     }
+
 }
