@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ArrayListProductDao implements ProductDao {
 
@@ -33,12 +34,22 @@ public class ArrayListProductDao implements ProductDao {
 
     @Override
     public synchronized void save(Product product) {
-        if (product.getId() != null && products.removeIf(p -> product.getId().equals(p.getId()))) {
+        if (product.getId() == null) {
+            product.setId(++maxId);
             products.add(product);
-            return;
+        } else {
+            int productIndex = IntStream
+                    .range(0, products.size())
+                    .filter(i -> product.getId().equals(products.get(i).getId()))
+                    .findAny()
+                    .orElse(-1);
+            if (productIndex == -1) {
+                products.add(product);
+                maxId = Math.max(product.getId(), maxId);
+            } else {
+                products.set(productIndex, product);
+            }
         }
-        product.setId(maxId++);
-        products.add(product);
     }
 
     @Override
