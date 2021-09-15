@@ -2,6 +2,8 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
+import com.es.phoneshop.model.product.SortField;
+import com.es.phoneshop.model.product.SortOrder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,8 +40,8 @@ public class ProductListPageServletTest {
     @InjectMocks
     private final ProductListPageServlet servlet = new ProductListPageServlet();
 
-    private final String sortOrder = "asc";
-    private final String sortField = "price";
+    private final String sortOrder = "ASC";
+    private final String sortField = "PRICE";
     private final String query = "Samsung";
 
     @Before
@@ -47,7 +49,7 @@ public class ProductListPageServletTest {
         when(request.getParameter("query")).thenReturn(query);
         when(request.getParameter("sort")).thenReturn(sortField);
         when(request.getParameter("order")).thenReturn(sortOrder);
-        when(productDao.findProducts(query, sortField, sortOrder)).thenReturn(Arrays.asList(product1, product2));
+        when(productDao.findProducts(query, SortField.valueOf(sortField), SortOrder.valueOf(sortOrder))).thenReturn(Arrays.asList(product1, product2));
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
     }
 
@@ -55,7 +57,7 @@ public class ProductListPageServletTest {
     public void testDoGet() throws ServletException, IOException {
         servlet.doGet(request, response);
         verify(requestDispatcher).forward(request, response);
-        verify(request).setAttribute("products", productDao.findProducts(query, sortField, sortOrder));
+        verify(request).setAttribute("products", productDao.findProducts(query, SortField.valueOf(sortField), SortOrder.valueOf(sortOrder)));
     }
 
 }

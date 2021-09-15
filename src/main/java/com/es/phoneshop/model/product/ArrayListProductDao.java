@@ -1,10 +1,6 @@
 package com.es.phoneshop.model.product;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.function.Predicate;
+import java.util.*;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -12,6 +8,10 @@ import java.util.stream.IntStream;
 public class ArrayListProductDao implements ProductDao {
     private List<Product> products = new ArrayList<>();
     private long maxId;
+    private Map<SortField, Comparator<Product>> sortComparatorMapping = Map.of(
+            SortField.DESCRIPTION, Comparator.comparing(product -> product.getDescription().toLowerCase()),
+            SortField.PRICE, Comparator.comparing(Product::getPrice)
+    );
 
     public static ArrayListProductDao getInstance() {
         return InstanceHolder.instance;
@@ -38,28 +38,22 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public synchronized List<Product> findProducts(String query, String sortField, String sortOrder) {
+    public synchronized List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         List<Product> returnProducts = findProducts(query);
-        if (sortField == null || sortField.isEmpty()) {
+        if (sortField == null) {
             return returnProducts;
         }
 
-        String orderType;
-        if (sortOrder == null || sortOrder.isEmpty()) {
-            orderType = "asc";
+        SortOrder orderType;
+        if (sortOrder == null) {
+            orderType = SortOrder.ASC;
         } else {
             orderType = sortOrder;
         }
 
-        Comparator<Product> comparator;
+        Comparator<Product> comparator = sortComparatorMapping.get(sortField);
 
-        if (sortField.equals("description")) {
-            comparator = Comparator.comparing(product -> product.getDescription().toLowerCase());
-        } else {
-            comparator = Comparator.comparing(Product::getPrice);
-        }
-
-        if (orderType.equals("desc")) {
+        if (orderType ==SortOrder.DESC) {
             comparator = comparator.reversed();
         }
 
@@ -109,17 +103,12 @@ public class ArrayListProductDao implements ProductDao {
 
         String[] words = query.toLowerCase().split(" ");
 
-        Predicate<Product> hasMatch = product -> Arrays.stream(words)
-                .anyMatch(word -> product.getDescription().toLowerCase().contains(word));
-
         ToIntFunction<Product> matchCount = product -> (int) Arrays.stream(words)
                 .filter(word -> product.getDescription().toLowerCase().contains(word))
                 .count();
 
         return findProducts().stream()
-                .filter(product -> product.getPrice() != null)
-                .filter(product -> product.getStock() > 0)
-                .filter(hasMatch)
+                .filter(p -> matchCount.applyAsInt(p) > 0)
                 .sorted(Comparator.comparingInt(matchCount).reversed())
                 .collect(Collectors.toList());
     }

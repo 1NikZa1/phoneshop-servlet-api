@@ -75,18 +75,33 @@ public class ArrayListProductDaoTest {
     }
 
     @Test
-    public void testFindProductsWithSorting() {
-        assertEquals("Samsung", productDao.findProducts(null, "price", "asc").get(0).getDescription());
-        assertEquals("Apple", productDao.findProducts(null, "price", "desc").get(0).getDescription());
-
-        assertEquals("Apple", productDao.findProducts(null, "description", "asc").get(0).getDescription());
-        assertEquals("Samsung", productDao.findProducts(null, "description", "desc").get(0).getDescription());
+    public void testFindProductsWithSortingByPriceAsc() {
+        assertEquals("Samsung", productDao.findProducts(null, SortField.PRICE, SortOrder.ASC).get(0).getDescription());
     }
 
     @Test
-    public void testFindProductsWithDefaultSortOrder() {
-        assertEquals("Samsung", productDao.findProducts(null, "price", null).get(0).getDescription());
-        assertEquals("Apple", productDao.findProducts(null, "description", null).get(0).getDescription());
+    public void testFindProductsWithSortingByPriceDesc() {
+        assertEquals("Apple", productDao.findProducts(null, SortField.PRICE, SortOrder.DESC).get(0).getDescription());
+    }
+
+    @Test
+    public void testFindProductsWithSortingByDescriptionAsc() {
+        assertEquals("Apple", productDao.findProducts(null, SortField.DESCRIPTION, SortOrder.ASC).get(0).getDescription());
+    }
+
+    @Test
+    public void testFindProductsWithSortingByDescriptionDesc() {
+        assertEquals("Samsung", productDao.findProducts(null, SortField.DESCRIPTION, SortOrder.DESC).get(0).getDescription());
+    }
+
+    @Test
+    public void testFindProductsWithDefaultSortOrderByPrice() {
+        assertEquals("Samsung", productDao.findProducts(null, SortField.PRICE, null).get(0).getDescription());
+    }
+
+    @Test
+    public void testFindProductsWithDefaultSortOrderByDescription() {
+        assertEquals("Apple", productDao.findProducts(null, SortField.DESCRIPTION, null).get(0).getDescription());
     }
 
     @Test
