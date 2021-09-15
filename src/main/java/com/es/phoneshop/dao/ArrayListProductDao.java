@@ -1,4 +1,9 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.dao;
+
+import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.exception.ProductNotFoundException;
+import com.es.phoneshop.model.product.SortField;
+import com.es.phoneshop.model.product.SortOrder;
 
 import java.util.*;
 import java.util.function.ToIntFunction;
@@ -13,12 +18,12 @@ public class ArrayListProductDao implements ProductDao {
             SortField.PRICE, Comparator.comparing(Product::getPrice)
     );
 
-    public static ArrayListProductDao getInstance() {
-        return InstanceHolder.instance;
-    }
-
     private static final class InstanceHolder {
         static final ArrayListProductDao instance = new ArrayListProductDao();
+    }
+
+    public static ArrayListProductDao getInstance() {
+        return InstanceHolder.instance;
     }
 
     private ArrayListProductDao() {

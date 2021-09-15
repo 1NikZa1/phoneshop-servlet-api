@@ -5,35 +5,76 @@
 
 <jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
 <tags:master pageTitle="Product Details">
+    <p>${cart}</p>
+    <c:if test="${not empty param.message}">
+        <div class="success">
+                ${param.message}
+        </div>
+    </c:if>
+    <c:if test="${not empty error}">
+        <div class="error">
+                There was an error adding to cart
+        </div>
+    </c:if>
     <p>
             ${product.description}
     </p>
-
+    <form method="post">
+        <table>
+            <tr>
+                <td>Image</td>
+                <td>
+                    <img src="${product.imageUrl}" alt="error">
+                </td>
+            </tr>
+            <tr>
+                <td>code</td>
+                <td>
+                        ${product.code}
+                </td>
+            </tr>
+            <tr>
+                <td>stock</td>
+                <td>
+                        ${product.stock}
+                </td>
+            </tr>
+            <tr>
+                <td>price</td>
+                <td class="price">
+                    <fmt:formatNumber value="${product.price}" type="currency"
+                                      currencySymbol="${product.currency.symbol}"/>
+                </td>
+            </tr>
+            <tr>
+                <td>quantity</td>
+                <td>
+                    <input class="quantity" name="quantity" value="${not empty error ? param.quantity : 1}">
+                    <c:if test="${not empty error}">
+                        <div class="error">
+                                ${error}
+                        </div>
+                    </c:if>
+                </td>
+            </tr>
+        </table>
+        <p>
+            <button>Add to cart</button>
+        </p>
+    </form>
     <table>
         <tr>
-            <td>Image</td>
-            <td>
-                <img src="${product.imageUrl}" alt="error">
-            </td>
-        </tr>
-        <tr>
-            <td>code</td>
-            <td>
-                    ${product.code}
-            </td>
-        </tr>
-        <tr>
-            <td>stock</td>
-            <td>
-                    ${product.stock}
-            </td>
-        </tr>
-        <tr>
-            <td>price</td>
-            <td>
-                <fmt:formatNumber value="${product.price}" type="currency"
-                                  currencySymbol="${product.currency.symbol}"/>
-            </td>
+            <h2>Recently viewed</h2>
+            <c:forEach var="product" items="${recent}">
+                <td>
+                    <img src="${product.imageUrl}">
+                    <div><a href="${pageContext.servletContext.contextPath}/products/${product.id}">${product.description}</a></div>
+                    <div>
+                        <fmt:formatNumber value="${product.price}" type="currency"
+                                          currencySymbol="${product.currency.symbol}"/>
+                    </div>
+                </td>
+            </c:forEach>
         </tr>
     </table>
 </tags:master>

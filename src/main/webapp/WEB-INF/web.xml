@@ -46,7 +46,7 @@
 
     <error-page>
         <location>/WEB-INF/pages/errorProductNotFound.jsp</location>
-        <exception-type>com.es.phoneshop.model.product.ProductNotFoundException</exception-type>
+        <exception-type>com.es.phoneshop.exception.ProductNotFoundException</exception-type>
     </error-page>
     <error-page>
         <location>/WEB-INF/pages/error.jsp</location>
