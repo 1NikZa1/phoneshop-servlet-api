@@ -44,12 +44,7 @@ public class ArrayListProductDao implements ProductDao {
             return returnProducts;
         }
 
-        SortOrder orderType;
-        if (sortOrder == null) {
-            orderType = SortOrder.ASC;
-        } else {
-            orderType = sortOrder;
-        }
+        SortOrder orderType = Objects.requireNonNullElse(sortOrder, SortOrder.ASC);
 
         Comparator<Product> comparator = sortComparatorMapping.get(sortField);
 
