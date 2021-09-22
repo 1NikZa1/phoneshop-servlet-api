@@ -1,7 +1,7 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.product.Product;
-import com.es.phoneshop.dao.ProductDao;
+import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.service.CartService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +13,6 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -21,7 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ProductPriceHistoryPageServletTest {
+public class MiniCartServletTest {
     @Mock
     private HttpServletRequest request;
     @Mock
@@ -29,24 +28,24 @@ public class ProductPriceHistoryPageServletTest {
     @Mock
     private RequestDispatcher requestDispatcher;
     @Mock
-    private Product product;
+    private CartService cartService;
     @Mock
-    private ProductDao productDao;
+    private Cart cart;
 
     @InjectMocks
-    private ProductPriceHistoryPageServlet servlet = new ProductPriceHistoryPageServlet();
+    private MiniCartServlet servlet = new MiniCartServlet();
 
     @Before
     public void setup() {
-        when(productDao.getProduct(1L)).thenReturn(product);
-        when(request.getPathInfo()).thenReturn("/1");
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+        when(cartService.getCart(request)).thenReturn(cart);
     }
 
     @Test
     public void testDoGet() throws ServletException, IOException {
         servlet.doGet(request, response);
-        verify(request).setAttribute("product", product);
-        verify(requestDispatcher).forward(request, response);
+        verify(request).setAttribute("cart", cart);
+        verify(cartService).getCart(request);
+        verify(requestDispatcher).include(request, response);
     }
 }

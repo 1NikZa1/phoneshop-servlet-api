@@ -1,11 +1,10 @@
 package com.es.phoneshop.web;
 
+import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.product.Product;
-import com.es.phoneshop.dao.ProductDao;
-import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.service.CartService;
 import com.es.phoneshop.service.RecentlyViewedService;
 import org.junit.Before;
@@ -19,7 +18,6 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -64,7 +62,6 @@ public class ProductDetailsPageServletTest {
         servlet.doGet(request, response);
 
         verify(request).setAttribute("product", product);
-        verify(request).setAttribute("cart", cartService.getCart(request));
         verify(request).setAttribute("recent",recentlyViewedService.get(request));
         verify(requestDispatcher).forward(request, response);
     }
