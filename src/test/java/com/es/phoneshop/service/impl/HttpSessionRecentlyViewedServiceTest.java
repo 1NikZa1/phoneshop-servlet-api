@@ -1,6 +1,8 @@
-package com.es.phoneshop.service;
+package com.es.phoneshop.service.impl;
 
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.service.RecentlyViewedService;
+import com.es.phoneshop.service.impl.HttpSessionRecentlyViewedService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

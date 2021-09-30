@@ -1,5 +1,7 @@
 package com.es.phoneshop.model.product;
 
+import com.es.phoneshop.model.item.Item;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -7,7 +9,7 @@ import java.util.Currency;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Product implements Serializable {
+public class Product extends Item implements Serializable {
     private Long id;
     private String code;
     private String description;

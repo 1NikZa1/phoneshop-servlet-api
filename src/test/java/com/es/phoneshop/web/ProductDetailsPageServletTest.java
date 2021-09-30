@@ -2,7 +2,6 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.OutOfStockException;
-import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.service.CartService;
@@ -21,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -57,7 +57,7 @@ public class ProductDetailsPageServletTest {
 
     @Test
     public void testDoGet() throws ServletException, IOException {
-        when(productDao.getProduct(1L)).thenReturn(product);
+        when(productDao.get(1L)).thenReturn(product);
         when(recentlyViewedService.get(request)).thenReturn(List.of(product));
         servlet.doGet(request, response);
 
@@ -66,15 +66,15 @@ public class ProductDetailsPageServletTest {
         verify(requestDispatcher).forward(request, response);
     }
 
-    @Test(expected = ProductNotFoundException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testDoGetWithWrongId() throws ServletException, IOException {
-        when(productDao.getProduct(1L)).thenThrow(new ProductNotFoundException(1L));
+        when(productDao.get(1L)).thenThrow(new NoSuchElementException());
         servlet.doGet(request, response);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDoGetWithNullId() throws ServletException, IOException {
-        when(productDao.getProduct(1L)).thenThrow(new IllegalArgumentException());
+        when(productDao.get(1L)).thenThrow(new IllegalArgumentException());
         servlet.doGet(request, response);
     }
 

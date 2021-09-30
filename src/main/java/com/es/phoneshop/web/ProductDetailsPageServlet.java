@@ -1,13 +1,13 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.dao.ArrayListProductDao;
+import com.es.phoneshop.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.service.CartService;
-import com.es.phoneshop.service.HttpSessionCartService;
-import com.es.phoneshop.service.HttpSessionRecentlyViewedService;
+import com.es.phoneshop.service.impl.HttpSessionCartService;
+import com.es.phoneshop.service.impl.HttpSessionRecentlyViewedService;
 import com.es.phoneshop.service.RecentlyViewedService;
 
 import javax.servlet.ServletConfig;
@@ -34,7 +34,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long productId = parseProductId(request);
-        Product product = productDao.getProduct(productId);
+        Product product = productDao.get(productId);
         recentlyViewedService.add(request, product);
         request.setAttribute("recent", recentlyViewedService.get(request));
         request.setAttribute("product", product);

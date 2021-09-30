@@ -36,7 +36,6 @@ public class DeleteCartItemServletTest {
 
     @Before
     public void setup() {
-        when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
         when(cartService.getCart(request)).thenReturn(cart);
         when(request.getPathInfo()).thenReturn("/1");
     }

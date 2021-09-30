@@ -1,11 +1,12 @@
-package com.es.phoneshop.service;
+package com.es.phoneshop.service.impl;
 
-import com.es.phoneshop.dao.ArrayListProductDao;
+import com.es.phoneshop.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.service.CartService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -53,7 +54,7 @@ public class HttpSessionCartService implements CartService {
         if (quantity <= 0) {
             throw new IllegalArgumentException();
         }
-        Product product = productDao.getProduct(productId);
+        Product product = productDao.get(productId);
         Optional<CartItem> cartItemOptional = findCartItem(cart, productId);
 
         if (isNewCartItem) {
@@ -81,6 +82,12 @@ public class HttpSessionCartService implements CartService {
     public synchronized void delete(Cart cart, Long productId) {
         cart.getItems().removeIf(cartItem ->
                 productId.equals(cartItem.getProduct().getId()));
+        recalculateCart(cart);
+    }
+
+    @Override
+    public synchronized void clearCart(Cart cart) {
+        cart.getItems().clear();
         recalculateCart(cart);
     }
 

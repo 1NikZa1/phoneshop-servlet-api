@@ -1,15 +1,13 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.dao.ArrayListProductDao;
+import com.es.phoneshop.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.model.cart.Cart;
-import com.es.phoneshop.model.product.Product;
-import com.es.phoneshop.model.product.SortField;
-import com.es.phoneshop.model.product.SortOrder;
+import com.es.phoneshop.model.product.*;
 import com.es.phoneshop.service.CartService;
-import com.es.phoneshop.service.HttpSessionCartService;
-import com.es.phoneshop.service.HttpSessionRecentlyViewedService;
+import com.es.phoneshop.service.impl.HttpSessionCartService;
+import com.es.phoneshop.service.impl.HttpSessionRecentlyViewedService;
 import com.es.phoneshop.service.RecentlyViewedService;
 import org.apache.http.client.utils.URIBuilder;
 
