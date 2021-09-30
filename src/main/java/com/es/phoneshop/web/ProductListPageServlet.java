@@ -6,8 +6,8 @@ import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.product.*;
 import com.es.phoneshop.service.CartService;
-import com.es.phoneshop.service.HttpSessionCartService;
-import com.es.phoneshop.service.HttpSessionRecentlyViewedService;
+import com.es.phoneshop.service.impl.HttpSessionCartService;
+import com.es.phoneshop.service.impl.HttpSessionRecentlyViewedService;
 import com.es.phoneshop.service.RecentlyViewedService;
 import org.apache.http.client.utils.URIBuilder;
 
@@ -89,8 +89,13 @@ public class ProductListPageServlet extends HttpServlet {
         try {
             uri = uriBuilder.build();
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        response.sendRedirect(request.getContextPath() + "/products" + uri + "&" + message);
+
+        if (uri.toString().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/products?" + message);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/products" + uri + "&" + message);
+        }
     }
 }
