@@ -53,6 +53,9 @@
                     <form id="addToCart${product.id}" method="post">
                         <input class="quantity" name="quantity" type="number" max="${product.stock}" min="1" value="1">
                         <input type="hidden" name="productId" value="${product.id}">
+                        <input type="hidden" name="query" value="${param.query}">
+                        <input type="hidden" name="sort" value="${param.sort}">
+                        <input type="hidden" name="order" value="${param.order}">
                     </form>
                 </td>
                 <td class="price">

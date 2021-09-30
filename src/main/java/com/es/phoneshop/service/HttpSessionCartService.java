@@ -41,32 +41,39 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public synchronized void add(Cart cart, Long productId, int quantity) throws OutOfStockException, IllegalArgumentException {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException();
-        }
-        Product product = productDao.getProduct(productId);
-        Optional<CartItem> cartItemOptional = findCartItem(cart, productId, quantity);
-        int cartItemQuantity = cartItemOptional.map(CartItem::getQuantity).orElse(0);
-
-        if (product.getStock() < quantity + cartItemQuantity) {
-            throw new OutOfStockException(product.getStock() - cartItemQuantity);
-        }
-        cartItemOptional.ifPresentOrElse(item -> item.setQuantity(item.getQuantity() + quantity),
-                () -> cart.getItems().add(new CartItem(product, quantity)));
-        recalculateCart(cart);
+        tryAddItemToCart(cart, productId, quantity, true);
     }
 
     @Override
     public synchronized void update(Cart cart, Long productId, int quantity) throws OutOfStockException {
+        tryAddItemToCart(cart, productId, quantity, false);
+    }
+
+    private void tryAddItemToCart(Cart cart, Long productId, int quantity, boolean isNewCartItem) throws OutOfStockException {
         if (quantity <= 0) {
             throw new IllegalArgumentException();
         }
         Product product = productDao.getProduct(productId);
-        Optional<CartItem> cartItemOptional = findCartItem(cart, productId, quantity);
-        if (product.getStock() < quantity) {
-            throw new OutOfStockException(product.getStock());
+        Optional<CartItem> cartItemOptional = findCartItem(cart, productId);
+
+        if (isNewCartItem) {
+            int cartItemQuantity = cartItemOptional.map(CartItem::getQuantity).orElse(0);
+
+            if (product.getStock() < quantity + cartItemQuantity) {
+                throw new OutOfStockException(product.getStock() - cartItemQuantity);
+            }
+
+            cartItemOptional.ifPresentOrElse(item -> item.setQuantity(item.getQuantity() + quantity),
+                    () -> cart.getItems().add(new CartItem(product, quantity)));
+
+        } else {
+
+            if (product.getStock() < quantity) {
+                throw new OutOfStockException(product.getStock());
+            }
+
+            cartItemOptional.ifPresent(item -> item.setQuantity(quantity));
         }
-        cartItemOptional.ifPresent(item -> item.setQuantity(quantity));
         recalculateCart(cart);
     }
 
@@ -85,7 +92,7 @@ public class HttpSessionCartService implements CartService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
     }
 
-    private Optional<CartItem> findCartItem(Cart cart, Long productId, int quantity) {
+    private Optional<CartItem> findCartItem(Cart cart, Long productId) {
         return cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst();

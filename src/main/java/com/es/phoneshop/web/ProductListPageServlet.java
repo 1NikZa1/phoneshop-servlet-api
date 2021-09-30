@@ -4,10 +4,12 @@ import com.es.phoneshop.dao.ArrayListProductDao;
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.model.cart.Cart;
-import com.es.phoneshop.model.product.*;
+import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.SortField;
+import com.es.phoneshop.model.product.SortOrder;
 import com.es.phoneshop.service.CartService;
-import com.es.phoneshop.service.impl.HttpSessionCartService;
-import com.es.phoneshop.service.impl.HttpSessionRecentlyViewedService;
+import com.es.phoneshop.service.HttpSessionCartService;
+import com.es.phoneshop.service.HttpSessionRecentlyViewedService;
 import com.es.phoneshop.service.RecentlyViewedService;
 import org.apache.http.client.utils.URIBuilder;
 
@@ -17,11 +19,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,7 +30,6 @@ public class ProductListPageServlet extends HttpServlet {
     private ProductDao productDao;
     private RecentlyViewedService recentlyViewedService;
     private CartService cartService;
-    private Map<String, String> params = new HashMap<>();
 
     @Override
     public void init(ServletConfig config) {
@@ -50,11 +48,6 @@ public class ProductListPageServlet extends HttpServlet {
                 Optional.ofNullable(order).map(name1 -> SortOrder.valueOf(name1.toUpperCase())).orElse(null));
         request.setAttribute("products", productList);
         request.setAttribute("recent", recentlyViewedService.get(request));
-
-        params.put("query", query);
-        params.put("sort", sort);
-        params.put("order", order);
-
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
 
@@ -79,23 +72,27 @@ public class ProductListPageServlet extends HttpServlet {
     }
 
     private void doRedirect(HttpServletRequest request, HttpServletResponse response, String message) throws IOException {
+        Map<String, String> params = Map.of(
+                "query", request.getParameter("query"),
+                "sort", request.getParameter("sort"),
+                "order", request.getParameter("order")
+        );
+
         URIBuilder uriBuilder = new URIBuilder();
+        String url;
+
         params.forEach((key, value) -> {
-            if (value != null) {
+            if (!value.isEmpty()) {
                 uriBuilder.addParameter(key, value);
             }
         });
-        URI uri = null;
-        try {
-            uri = uriBuilder.build();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
 
-        if (uri.toString().isEmpty()) {
+        url = uriBuilder.toString();
+
+        if (url.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/products?" + message);
         } else {
-            response.sendRedirect(request.getContextPath() + "/products" + uri + "&" + message);
+            response.sendRedirect(request.getContextPath() + "/products" + url + "&" + message);
         }
     }
 }
