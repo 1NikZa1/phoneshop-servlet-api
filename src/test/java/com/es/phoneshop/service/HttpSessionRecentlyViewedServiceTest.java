@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HttpSessionRecentlyViewedServiceTest {
-    private static final String RECENT_SESSION_ATTRIBUTE = HttpSessionRecentlyViewedService.class.getName() + ".cart";
+    private static final String RECENT_SESSION_ATTRIBUTE = HttpSessionRecentlyViewedService.class.getName() + ".recently";
     @Mock
     private HttpSession session;
     @Mock
