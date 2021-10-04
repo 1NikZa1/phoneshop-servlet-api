@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.List;
@@ -62,37 +63,34 @@ public class ProductListPageServlet extends HttpServlet {
             Cart cart = cartService.getCart(request);
             cartService.add(cart, productId, quantityInt);
         } catch (OutOfStockException ex) {
-            doRedirect(request, response, "error=Out of stock for product " + productId);
+            doRedirect(request, response, "Out of stock for product " + productId);
             return;
         } catch (ParseException ex) {
-            doRedirect(request, response, "error=parse exception");
+            doRedirect(request, response, "parse exception");
             return;
         }
-        doRedirect(request, response, "message=Product " + productId + " added to cart");
+        doRedirect(request, response, "Product " + productId + " added to cart");
     }
 
     private void doRedirect(HttpServletRequest request, HttpServletResponse response, String message) throws IOException {
         Map<String, String> params = Map.of(
                 "query", request.getParameter("query"),
                 "sort", request.getParameter("sort"),
-                "order", request.getParameter("order")
+                "order", request.getParameter("order"),
+                "message", message
         );
 
-        URIBuilder uriBuilder = new URIBuilder();
-        String url;
-
-        params.forEach((key, value) -> {
-            if (!value.isEmpty()) {
-                uriBuilder.addParameter(key, value);
-            }
-        });
-
-        url = uriBuilder.toString();
-
-        if (url.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/products?" + message);
-        } else {
-            response.sendRedirect(request.getContextPath() + "/products" + url + "&" + message);
+        URIBuilder uriBuilder;
+        try {
+            uriBuilder = new URIBuilder(request.getContextPath() + "/products");
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
+
+        params.entrySet().stream()
+                .filter(t -> !t.getValue().isEmpty())
+                .forEach(t -> uriBuilder.addParameter(t.getKey(), t.getValue()));
+
+        response.sendRedirect(uriBuilder.toString());
     }
 }
