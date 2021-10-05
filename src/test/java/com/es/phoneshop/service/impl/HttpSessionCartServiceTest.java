@@ -1,16 +1,16 @@
-package com.es.phoneshop.service;
+package com.es.phoneshop.service.impl;
 
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.service.CartService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +49,7 @@ public class HttpSessionCartServiceTest {
         cartItems.add(new CartItem(product, 4));
         when(cart.getItems()).thenReturn(cartItems);
 
-        when(productDao.getProduct(1L)).thenReturn(product);
+        when(productDao.get(1L)).thenReturn(product);
 
         when(product.getId()).thenReturn(1L);
         when(product.getStock()).thenReturn(100);
@@ -89,6 +89,12 @@ public class HttpSessionCartServiceTest {
 
         assertEquals(1, cart.getItems().size());
         assertEquals(10, cart.getItems().get(0).getQuantity());
+    }
+
+    @Test
+    public void testClearCart() {
+        cartService.clearCart(cart);
+        assertEquals(0, cart.getItems().size());
     }
 
     @Test

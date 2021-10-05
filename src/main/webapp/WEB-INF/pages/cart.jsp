@@ -73,6 +73,11 @@
             <button>Update</button>
         </p>
     </form>
+    <c:if test="${cart.items.size()!=0}">
+    <form action="${pageContext.servletContext.contextPath}/checkout" method="get">
+        <button>Checkout</button>
+    </form>
+</c:if>
     <form id="deleteCartItem" method="post">
     </form>
 

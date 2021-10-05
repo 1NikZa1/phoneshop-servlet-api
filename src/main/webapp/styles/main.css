@@ -39,7 +39,12 @@ img.product-tile {
 .success {
     color: green;
 }
+
 /* Page specific styles */
 body.product-list {
+}
 
+.cart-info {
+    line-height: 35px;
+    padding: 0 0 30px 30px;
 }

@@ -1,18 +1,15 @@
-package com.es.phoneshop.dao;
+package com.es.phoneshop.dao.impl;
 
+import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.model.product.Product;
-import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.product.SortField;
 import com.es.phoneshop.model.product.SortOrder;
 
 import java.util.*;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-public class ArrayListProductDao implements ProductDao {
-    private List<Product> products = new ArrayList<>();
-    private long maxId;
+public class ArrayListProductDao extends ArrayListGenericDao<Product> implements ProductDao {
     private Map<SortField, Comparator<Product>> sortComparatorMapping = Map.of(
             SortField.DESCRIPTION, Comparator.comparing(product -> product.getDescription().toLowerCase()),
             SortField.PRICE, Comparator.comparing(Product::getPrice)
@@ -27,19 +24,6 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     private ArrayListProductDao() {
-    }
-
-    @Override
-    public synchronized Product getProduct(Long id) {
-
-        if (id == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return products.stream()
-                .filter(product -> id.equals(product.getId()))
-                .findAny()
-                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
     @Override
@@ -62,35 +46,15 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public synchronized void save(Product product) {
-        if (product.getId() == null) {
-            product.setId(++maxId);
-            products.add(product);
-        } else {
-            int productIndex = IntStream
-                    .range(0, products.size())
-                    .filter(i -> product.getId().equals(products.get(i).getId()))
-                    .findAny()
-                    .orElse(-1);
-            if (productIndex == -1) {
-                products.add(product);
-                maxId = Math.max(product.getId(), maxId);
-            } else {
-                products.set(productIndex, product);
-            }
-        }
-    }
-
-    @Override
     public synchronized void delete(Long id) {
         if (id == null) {
             throw new IllegalArgumentException();
         }
-        products.removeIf(product -> product.getId().equals(id));
+        items.removeIf(product -> product.getId().equals(id));
     }
 
     private synchronized List<Product> findProducts() {
-        return products.stream()
+        return items.stream()
                 .filter(product -> product.getPrice() != null)
                 .filter(product -> product.getStock() > 0)
                 .collect(Collectors.toList());

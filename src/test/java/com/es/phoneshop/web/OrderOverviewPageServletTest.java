@@ -1,7 +1,7 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.cart.Cart;
-import com.es.phoneshop.service.CartService;
+import com.es.phoneshop.dao.OrderDao;
+import com.es.phoneshop.model.order.Order;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MiniCartServletTest {
+public class OrderOverviewPageServletTest {
     @Mock
     private HttpServletRequest request;
     @Mock
@@ -28,32 +28,25 @@ public class MiniCartServletTest {
     @Mock
     private RequestDispatcher requestDispatcher;
     @Mock
-    private CartService cartService;
+    private OrderDao orderDao;
     @Mock
-    private Cart cart;
+    private Order order;
 
     @InjectMocks
-    private MiniCartServlet servlet = new MiniCartServlet();
+    private OrderOverviewPageServlet servlet = new OrderOverviewPageServlet();
 
     @Before
     public void setup() {
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
-        when(cartService.getCart(request)).thenReturn(cart);
+        when(request.getPathInfo()).thenReturn("123-456");
+        when(orderDao.getOrderBySecureId(anyString())).thenReturn(order);
     }
 
     @Test
     public void testDoGet() throws ServletException, IOException {
         servlet.doGet(request, response);
-        verify(request).setAttribute("cart", cart);
-        verify(cartService).getCart(request);
-        verify(requestDispatcher).include(request, response);
+        verify(request).setAttribute("order", order);
+        verify(requestDispatcher).forward(request, response);
     }
 
-    @Test
-    public void testDoPost() throws ServletException, IOException {
-        servlet.doPost(request, response);
-        verify(request).setAttribute("cart", cart);
-        verify(cartService).getCart(request);
-        verify(requestDispatcher).include(request, response);
-    }
 }

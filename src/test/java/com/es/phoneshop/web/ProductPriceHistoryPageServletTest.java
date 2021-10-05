@@ -38,7 +38,7 @@ public class ProductPriceHistoryPageServletTest {
 
     @Before
     public void setup() {
-        when(productDao.getProduct(1L)).thenReturn(product);
+        when(productDao.get(1L)).thenReturn(product);
         when(request.getPathInfo()).thenReturn("/1");
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
     }

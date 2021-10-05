@@ -1,6 +1,5 @@
-package com.es.phoneshop.dao;
+package com.es.phoneshop.dao.impl;
 
-import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.SortField;
 import com.es.phoneshop.model.product.SortOrder;
@@ -15,6 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -50,17 +50,17 @@ public class ArrayListProductDaoTest {
 
     @Test
     public void testGetProduct() {
-        assertEquals(product1.getId(), productDao.getProduct(1L).getId());
+        assertEquals(product1.getId(), productDao.get(1L).getId());
     }
 
-    @Test(expected = ProductNotFoundException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testGetProductWithWrongId() {
-        productDao.getProduct(0L);
+        productDao.get(0L);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetProductWithNullId() {
-        productDao.getProduct(null);
+        productDao.get(null);
     }
 
     @Test
