@@ -6,7 +6,10 @@ import com.es.phoneshop.model.product.SortOrder;
 
 import java.util.List;
 
-public interface ProductDao extends GenericDao<Product>{
+public interface ProductDao extends GenericDao<Product> {
     List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder);
+
+    List<Product> findProducts(String description, String searchOption, Double minPrice, Double maxPrice);
+
     void delete(Long id);
 }
