@@ -14,6 +14,9 @@
         PhoneShop
     </a>
     <jsp:include page="/cart/minicart"/>
+    <a href="${pageContext.servletContext.contextPath}/advanced-search">
+        Advanced search
+    </a>
 </header>
 <main>
     <jsp:doBody/>

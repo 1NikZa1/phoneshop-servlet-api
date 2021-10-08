@@ -2,6 +2,7 @@ package com.es.phoneshop.dao.impl;
 
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.SearchOption;
 import com.es.phoneshop.model.product.SortField;
 import com.es.phoneshop.model.product.SortOrder;
 
@@ -37,12 +38,38 @@ public class ArrayListProductDao extends ArrayListGenericDao<Product> implements
 
         Comparator<Product> comparator = sortComparatorMapping.get(sortField);
 
-        if (orderType ==SortOrder.DESC) {
+        if (orderType == SortOrder.DESC) {
             comparator = comparator.reversed();
         }
 
         returnProducts.sort(comparator);
         return returnProducts;
+    }
+
+    @Override
+    public synchronized List<Product> findProducts(String description, String searchOption, Double minPrice, Double maxPrice) {
+        if (description == null
+                && searchOption == null
+                && minPrice == null
+                && maxPrice == null) {
+            return new ArrayList<>();
+        }
+
+        if (SearchOption.valueOf(searchOption) == SearchOption.ANY_WORDS) {
+            return findProducts(description).stream()
+                    .filter(i -> minPrice == null || i.getPrice().doubleValue() >= minPrice)
+                    .filter(i -> maxPrice == null || i.getPrice().doubleValue() <= maxPrice)
+                    .collect(Collectors.toList());
+        } else {
+            String[] keyWords = splitDescription(description);
+            return findProducts(description).stream()
+                    .filter(i -> Arrays.stream(keyWords)
+                            .allMatch(keyWord -> i.getDescription().toLowerCase().contains(keyWord)))
+                    .filter(i -> minPrice == null || i.getPrice().doubleValue() >= minPrice)
+                    .filter(i -> maxPrice == null || i.getPrice().doubleValue() <= maxPrice)
+                    .collect(Collectors.toList());
+        }
+
     }
 
     @Override
@@ -75,5 +102,12 @@ public class ArrayListProductDao extends ArrayListGenericDao<Product> implements
                 .filter(p -> matchCount.applyAsInt(p) > 0)
                 .sorted(Comparator.comparingInt(matchCount).reversed())
                 .collect(Collectors.toList());
+    }
+
+    private String[] splitDescription(String description) {
+        if (description == null) {
+            description = "";
+        }
+        return description.toLowerCase().split(" ");
     }
 }

@@ -23,6 +23,8 @@
         </label>
         <button>Search</button>
     </form>
+    <a href="advanced-search">Advanced search</a>
+    <p></p>
     <table>
         <thead>
         <tr>
